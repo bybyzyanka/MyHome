@@ -15,23 +15,13 @@ public class HomeUserDAO extends DAO {
     @Override
     public void createTable() {
         try {
-            PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS ? (" +
-                    "? int REFERENCES ?(?)," +
-                    "? int REFERENCES ?(?))," +
-                    "PRIMARY KEY(?, ?)");
-
-            statement.setString(1, Table.HOME_USER);
-
-            statement.setString(2, Column.HOME_ID);
-            statement.setString(3, Table.HOME);
-            statement.setString(4, Column.HOME_ID);
-
-            statement.setString(5, Column.USER_ID);
-            statement.setString(6, Table.USER);
-            statement.setString(7, Column.USER_ID);
-
-            statement.setString(8, Column.HOME_ID);
-            statement.setString(9, Column.USER_ID);
+            PreparedStatement statement = getConnection().prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS " + Table.HOME_USER + " (" +
+                    Column.HOME_ID + " int," +
+                    Column.USER_ID + " int," +
+                    "FOREIGN KEY(" + Column.HOME_ID + ") REFERENCES " + Table.HOME + "(" + Column.HOME_ID + ")," +
+                    "FOREIGN KEY(" + Column.USER_ID + ") REFERENCES " + Table.USER + "(" + Column.USER_ID + ")," +
+                    "PRIMARY KEY(" + Column.HOME_ID + ", " + Column.USER_ID + ")");
 
             statement.executeUpdate();
         } catch (Exception exception) {
@@ -42,11 +32,10 @@ public class HomeUserDAO extends DAO {
     public List<User> getUsersWithAccess(int homeId) {
         List<User> usersWithAccess = new ArrayList<>();
         try {
-            PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM ? WHERE ?=?");
+            PreparedStatement statement = getConnection().prepareStatement(
+                    "SELECT * FROM " + Table.HOME_USER + " WHERE " + Column.HOME_ID + "=?");
 
-            statement.setString(1, Table.HOME_USER);
-            statement.setString(2, Column.HOME_ID);
-            statement.setInt(3, homeId);
+            statement.setInt(1, homeId);
 
             ResultSet result = statement.executeQuery();
             while(result.next()) {
@@ -64,11 +53,10 @@ public class HomeUserDAO extends DAO {
     public List<Home> getHomesWithAccess(int userId) {
         List<Home> usersWithAccess = new ArrayList<>();
         try {
-            PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM ? WHERE ?=?");
+            PreparedStatement statement = getConnection().prepareStatement(
+                    "SELECT * FROM " + Table.HOME_USER + " WHERE " + Column.USER_ID + "=?");
 
-            statement.setString(1, Table.HOME_USER);
-            statement.setString(2, Column.USER_ID);
-            statement.setInt(3, userId);
+            statement.setInt(1, userId);
 
             ResultSet result = statement.executeQuery();
             while(result.next()) {
@@ -87,15 +75,11 @@ public class HomeUserDAO extends DAO {
 
     public boolean hasHomeAccess(int userId, int homeId) {
         try {
-            PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM ? WHERE ?=? AND ?=?");
+            PreparedStatement statement = getConnection().prepareStatement(
+                    "SELECT * FROM " + Table.HOME_USER + " WHERE " + Column.USER_ID + "=? AND " + Column.HOME_ID + "=?");
 
-            statement.setString(1, Table.HOME_USER);
-
-            statement.setString(2, Column.USER_ID);
-            statement.setInt(3, userId);
-
-            statement.setString(4, Column.HOME_ID);
-            statement.setInt(5, homeId);
+            statement.setInt(1, userId);
+            statement.setInt(2, homeId);
 
             ResultSet result = statement.executeQuery();
             if(!result.next()) {
@@ -114,15 +98,11 @@ public class HomeUserDAO extends DAO {
 
     public void giveHomeAccess(int homeId, int userId) {
         try {
-            PreparedStatement statement = getConnection().prepareStatement("INSERT INTO ?(?, ?) VALUES(?, ?)");
+            PreparedStatement statement = getConnection().prepareStatement(
+                    "INSERT INTO " + Table.HOME_USER + "(" + Column.HOME_ID + ", " + Column.USER_ID + ") VALUES(?, ?)");
 
-            statement.setString(1, Table.HOME_USER);
-
-            statement.setString(2, Column.HOME_ID);
-            statement.setString(3, Column.USER_ID);
-
-            statement.setInt(4, homeId);
-            statement.setInt(5, userId);
+            statement.setInt(1, homeId);
+            statement.setInt(2, userId);
 
             statement.executeUpdate();
         } catch (Exception exception) {
@@ -132,15 +112,11 @@ public class HomeUserDAO extends DAO {
 
     public void removeHomeAccess(int homeId, int userId) {
         try {
-            PreparedStatement statement = getConnection().prepareStatement("DELETE * FROM ? WHERE ?=? AND ?=?");
+            PreparedStatement statement = getConnection().prepareStatement(
+                    "DELETE * FROM " + Table.HOME_USER + " WHERE " + Column.HOME_ID + "=? AND " + Column.USER_ID + "=?");
 
-            statement.setString(1, Table.HOME_USER);
-
-            statement.setString(2, Column.HOME_ID);
-            statement.setString(3, Column.USER_ID);
-
-            statement.setInt(4, homeId);
-            statement.setInt(5, userId);
+            statement.setInt(1, homeId);
+            statement.setInt(2, userId);
 
             statement.executeUpdate();
         } catch (Exception exception) {
