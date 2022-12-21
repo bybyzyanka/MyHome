@@ -17,14 +17,15 @@ public class HomePrivateCommand implements Command {
 
     @Override
     public boolean perform() {
-        Optional<Home> home = homeDAO.getHome(player.getName());
-        if(!home.isPresent()) {
+        Home home = homeDAO.getHome(player.getName());
+        if(home == null) {
             player.sendMessage(Message.HOME_DOESNT_EXIST.toString());
             return true;
         }
 
-        home.get().setPrivacy(true);
-        homeDAO.updateHome(home.get());
+        home.setPrivacy(true);
+        homeDAO.updateHome(home);
+        player.sendMessage(Message.PRIVATE.toString());
 
         return true;
     }

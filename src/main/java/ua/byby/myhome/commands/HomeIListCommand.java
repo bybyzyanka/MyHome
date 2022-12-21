@@ -21,14 +21,14 @@ public class HomeIListCommand implements Command {
 
     @Override
     public boolean perform() {
-        Optional<Home> home = homeDAO.getHome(player.getName());
-        if(!home.isPresent()) {
+        Home home = homeDAO.getHome(player.getName());
+        if(home == null) {
             player.sendMessage(Message.HOME_DOESNT_EXIST.toString());
             return true;
         }
 
         AtomicReference<String> list = new AtomicReference<>(Message.ILIST.toString());
-        List<User> users = homeUserDAO.getUsersWithAccess(home.get().getHomeId());
+        List<User> users = homeUserDAO.getUsersWithAccess(home.getHomeId());
         if(users.isEmpty()) {
             return true;
         }

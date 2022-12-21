@@ -34,7 +34,7 @@ public class HomeDAO extends DAO {
         }
     }
 
-    public Optional<Home> getHome(int userId) {
+    public Home getHome(int userId) {
         try {
             PreparedStatement statement = getConnection().prepareStatement(
                     "SELECT * FROM " + Table.HOME + " WHERE " + Column.USER_ID + "=?");
@@ -42,19 +42,21 @@ public class HomeDAO extends DAO {
             statement.setInt(1, userId);
 
             ResultSet result = statement.executeQuery();
+            result.next();
+
             Home home = new Home();
             home.setHomeId(result.getInt(Column.HOME_ID));
             home.setUserId(result.getInt(Column.USER_ID));
             home.setLocation(locationParser.parseToLocation(result.getString(Column.LOCATION)));
             home.setPrivacy(result.getBoolean(Column.PRIVACY));
 
-            return Optional.of(home);
+            return home;
         } catch (Exception exception) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    public Optional<Home> getHomeById(int homeId) {
+    public Home getHomeById(int homeId) {
         try {
             PreparedStatement statement = getConnection().prepareStatement(
                     "SELECT * FROM " + Table.HOME + " WHERE " + Column.HOME_ID + "=?");
@@ -62,20 +64,22 @@ public class HomeDAO extends DAO {
             statement.setInt(1, homeId);
 
             ResultSet result = statement.executeQuery();
+            result.next();
+
             Home home = new Home();
             home.setHomeId(result.getInt(Column.HOME_ID));
             home.setUserId(result.getInt(Column.USER_ID));
             home.setLocation(locationParser.parseToLocation(result.getString(Column.LOCATION)));
             home.setPrivacy(result.getBoolean(Column.PRIVACY));
 
-            return Optional.of(home);
+            return home;
         } catch (Exception exception) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    public Optional<Home> getHome(String nick) {
-        return getHome(MyHomePlugin.getInstance().getUserDAO().getUser(nick).get().getUserId());
+    public Home getHome(String nick) {
+        return getHome(userDAO.getUser(nick).getUserId());
     }
 
     public void createHome(int userId, Location location) {
@@ -95,7 +99,7 @@ public class HomeDAO extends DAO {
     }
 
     public void createHome(String nick, Location location) {
-        createHome(userDAO.getUser(nick).get().getUserId(), location);
+        createHome(userDAO.getUser(nick).getUserId(), location);
     }
 
     public void updateHome(Home home) {

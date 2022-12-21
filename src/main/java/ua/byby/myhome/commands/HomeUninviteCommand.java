@@ -27,19 +27,19 @@ public class HomeUninviteCommand implements Command {
             return true;
         }
 
-        Optional<Home> home = homeDAO.getHome(player.getName());
-        if(!home.isPresent()) {
+        Home home = homeDAO.getHome(player.getName());
+        if(home == null) {
             player.sendMessage(Message.HOME_DOESNT_EXIST.toString());
             return true;
         }
 
-        int invitedUserId = userDAO.getUser(uninvited.getName()).get().getUserId();
-        if(!homeUserDAO.hasHomeAccess(home.get().getHomeId(), invitedUserId)) {
+        int invitedUserId = userDAO.getUser(uninvited.getName()).getUserId();
+        if(!homeUserDAO.hasHomeAccess(home.getHomeId(), invitedUserId)) {
             player.sendMessage(Message.PLAYER_DOESNT_HAVE_ACCESS.toString());
             return true;
         }
 
-        homeUserDAO.removeHomeAccess(home.get().getHomeId(), invitedUserId);
+        homeUserDAO.removeHomeAccess(home.getHomeId(), invitedUserId);
         player.sendMessage(Message.SUCCESS.toString());
         uninvited.sendMessage(Message.UNINVITED.toString().replace(Placeholder.NICK, player.getName()));
 

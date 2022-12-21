@@ -27,19 +27,19 @@ public class HomeInviteCommand implements Command {
             return true;
         }
 
-        Optional<Home> home = homeDAO.getHome(player.getName());
-        if(!home.isPresent()) {
+        Home home = homeDAO.getHome(player.getName());
+        if(home == null) {
             player.sendMessage(Message.HOME_DOESNT_EXIST.toString());
             return true;
         }
 
-        int invitedUserId = userDAO.getUser(invited.getName()).get().getUserId();
-        if(homeUserDAO.hasHomeAccess(home.get().getHomeId(), invitedUserId)) {
+        int invitedUserId = userDAO.getUser(invited.getName()).getUserId();
+        if(homeUserDAO.hasHomeAccess(home.getHomeId(), invitedUserId)) {
             player.sendMessage(Message.PLAYER_ALREADY_HAS_ACCESS.toString());
             return true;
         }
 
-        homeUserDAO.giveHomeAccess(home.get().getHomeId(), invitedUserId);
+        homeUserDAO.giveHomeAccess(home.getHomeId(), invitedUserId);
         player.sendMessage(Message.SUCCESS.toString());
         invited.sendMessage(Message.INVITED.toString().replace(Placeholder.NICK, player.getName()));
 

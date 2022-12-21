@@ -16,12 +16,12 @@ public class HomeUserDAO extends DAO {
     public void createTable() {
         try {
             PreparedStatement statement = getConnection().prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS " + Table.HOME_USER + " (" +
+                    "CREATE TABLE IF NOT EXISTS " + Table.HOME_USER + "(" +
                     Column.HOME_ID + " int," +
                     Column.USER_ID + " int," +
                     "FOREIGN KEY(" + Column.HOME_ID + ") REFERENCES " + Table.HOME + "(" + Column.HOME_ID + ")," +
                     "FOREIGN KEY(" + Column.USER_ID + ") REFERENCES " + Table.USER + "(" + Column.USER_ID + ")," +
-                    "PRIMARY KEY(" + Column.HOME_ID + ", " + Column.USER_ID + ")");
+                    "PRIMARY KEY(" + Column.HOME_ID + ", " + Column.USER_ID + "))");
 
             statement.executeUpdate();
         } catch (Exception exception) {
@@ -39,7 +39,7 @@ public class HomeUserDAO extends DAO {
 
             ResultSet result = statement.executeQuery();
             while(result.next()) {
-                usersWithAccess.add(userDAO.getUserById(result.getInt(Column.USER_ID)).get());
+                usersWithAccess.add(userDAO.getUserById(result.getInt(Column.USER_ID)));
             }
 
             return usersWithAccess;
@@ -60,7 +60,7 @@ public class HomeUserDAO extends DAO {
 
             ResultSet result = statement.executeQuery();
             while(result.next()) {
-                usersWithAccess.add(homeDAO.getHomeById(result.getInt(Column.HOME_ID)).get());
+                usersWithAccess.add(homeDAO.getHomeById(result.getInt(Column.HOME_ID)));
             }
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -70,7 +70,7 @@ public class HomeUserDAO extends DAO {
     }
 
     public List<Home> getHomesWithAccess(String nick) {
-        return getHomesWithAccess(userDAO.getUser(nick).get().getUserId());
+        return getHomesWithAccess(userDAO.getUser(nick).getUserId());
     }
 
     public boolean hasHomeAccess(int userId, int homeId) {
@@ -85,15 +85,15 @@ public class HomeUserDAO extends DAO {
             if(!result.next()) {
                 throw new Exception();
             }
+
+            return result.next();
         } catch (Exception exception) {
             return false;
         }
-
-        return true;
     }
 
     public boolean hasHomeAccess(String nick, int homeId) {
-        return hasHomeAccess(userDAO.getUser(nick).get().getUserId(), homeId);
+        return hasHomeAccess(userDAO.getUser(nick).getUserId(), homeId);
     }
 
     public void giveHomeAccess(int homeId, int userId) {
@@ -113,7 +113,7 @@ public class HomeUserDAO extends DAO {
     public void removeHomeAccess(int homeId, int userId) {
         try {
             PreparedStatement statement = getConnection().prepareStatement(
-                    "DELETE * FROM " + Table.HOME_USER + " WHERE " + Column.HOME_ID + "=? AND " + Column.USER_ID + "=?");
+                    "DELETE FROM " + Table.HOME_USER + " WHERE " + Column.HOME_ID + "=? AND " + Column.USER_ID + "=?");
 
             statement.setInt(1, homeId);
             statement.setInt(2, userId);

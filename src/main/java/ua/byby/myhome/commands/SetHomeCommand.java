@@ -18,10 +18,10 @@ public class SetHomeCommand implements CommandExecutor, ua.byby.myhome.util.Comm
         }
 
         Player player = (Player) sender;
-        Optional<Home> home = homeDAO.getHome(player.getName());
-        if(home.isPresent()) {
-            home.get().setLocation(player.getLocation());
-            homeDAO.updateHome(home.get());
+        Home home = homeDAO.getHome(player.getName());
+        if(home != null) {
+            home.setLocation(player.getLocation());
+            homeDAO.updateHome(home);
         } else {
             homeDAO.createHome(player.getName(), player.getLocation());
         }

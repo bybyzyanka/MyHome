@@ -13,7 +13,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         String nick = event.getPlayer().getName();
-        if(!userDAO.getUser(nick).isPresent()) {
+        if(userDAO.getUser(nick) == null) {
             userDAO.createUser(nick);
         }
     }

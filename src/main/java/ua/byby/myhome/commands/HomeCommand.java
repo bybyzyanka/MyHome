@@ -7,13 +7,11 @@ import ua.byby.myhome.models.Home;
 import ua.byby.myhome.util.Command;
 import ua.byby.myhome.util.Message;
 
-import java.util.Optional;
-
 public class HomeCommand implements Command {
 
     private Player player;
     private String homeOwnerNick;
-    private Optional<Home> home;
+    private Home home;
 
     public HomeCommand(Player player) {
         this.player = player;
@@ -32,7 +30,6 @@ public class HomeCommand implements Command {
     }
 
     private void findHome() {
-        HomeDAO homeDAO = MyHomePlugin.getInstance().getHomeDAO();
         if(homeOwnerNick != null) {
             home = homeDAO.getHome(homeOwnerNick);
             return;
@@ -42,11 +39,12 @@ public class HomeCommand implements Command {
     }
 
     private boolean homeTeleportation() {
-        if(!home.isPresent()) {
+        if(home == null) {
+            player.sendMessage(Message.HOME_DOESNT_EXIST.toString());
             return false;
         }
 
-        Home home = this.home.get();
+        Home home = this.home;
         if(home.isPrivate()) {
             if(!MyHomePlugin.getInstance().getHomeUserDAO().hasHomeAccess(homeOwnerNick, home.getHomeId())) {
                 player.sendMessage(Message.NO_ACCESS.toString());

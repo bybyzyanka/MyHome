@@ -25,7 +25,7 @@ public class HomeListCommand implements Command {
             return true;
         }
 
-        homes.forEach(home -> list.set(list + userDAO.getUserById(home.getUserId()).get().getNick() + ", "));
+        homes.forEach(home -> list.set(list + userDAO.getUserById(home.getUserId()).getNick() + ", "));
 
         player.sendMessage(list.get().substring(0, list.get().length() - 2));
         return true;

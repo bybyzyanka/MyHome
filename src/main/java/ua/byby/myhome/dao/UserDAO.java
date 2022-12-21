@@ -6,7 +6,6 @@ import ua.byby.myhome.util.Table;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Optional;
 
 public class UserDAO extends DAO {
 
@@ -16,7 +15,7 @@ public class UserDAO extends DAO {
             PreparedStatement statement = getConnection().prepareStatement(
                     "CREATE TABLE IF NOT EXISTS " + Table.USER + "(" +
                     Column.USER_ID + " int NOT NULL AUTO_INCREMENT," +
-                    Column.NICK + " varchar(32) NOT NULL," +
+                    Column.NICK + " varchar(32) NOT NULL UNIQUE," +
                     "PRIMARY KEY(" + Column.USER_ID + "))");
 
             statement.executeUpdate();
@@ -25,7 +24,7 @@ public class UserDAO extends DAO {
         }
     }
 
-    public Optional<User> getUser(String nick) {
+    public User getUser(String nick) {
         try {
             PreparedStatement statement = getConnection().prepareStatement(
                     "SELECT * FROM " + Table.USER + " WHERE " + Column.NICK + "=?");
@@ -33,17 +32,19 @@ public class UserDAO extends DAO {
             statement.setString(1, nick);
 
             ResultSet result = statement.executeQuery();
+            result.next();
+
             User user = new User();
             user.setUserId(result.getInt(Column.USER_ID));
             user.setNick(result.getString(Column.NICK));
 
-            return Optional.of(user);
+            return user;
         } catch (Exception exception) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    public Optional<User> getUserById(int userId) {
+    public User getUserById(int userId) {
         try {
             PreparedStatement statement = getConnection().prepareStatement(
                     "SELECT * FROM " + Table.USER + " WHERE " + Column.USER_ID + "=?");
@@ -51,13 +52,14 @@ public class UserDAO extends DAO {
             statement.setInt(1, userId);
 
             ResultSet result = statement.executeQuery();
+            result.next();
             User user = new User();
             user.setUserId(result.getInt(Column.USER_ID));
             user.setNick(result.getString(Column.NICK));
 
-            return Optional.of(user);
+            return user;
         } catch (Exception exception) {
-            return Optional.empty();
+            return null;
         }
     }
 
